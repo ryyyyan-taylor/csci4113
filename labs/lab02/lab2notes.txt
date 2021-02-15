@@ -1,0 +1,65 @@
+Lab 2 - Storage Management
+CSCI 4113 SysAdmin
+Ryan Taylor
+===================
+
+## create physical volume
+pvcreate /dev/sdb
+
+## create volume group
+vgcreate new /dev/sdb
+
+## create logical volumes and double check with lsblk
+lvcreate -n home --size 4G new
+lvcreate -n tmp --size 1G new
+lsblk
+
+## create file systems on logical volumes
+mkfs.xfs /dev/new/home
+mkfs.xfs /dev/new/tmp
+
+## create temporary mount points
+mkdir /mnt/home
+mkdir /mnt/tmp
+
+## mount temporarily
+mount /dev/new/home /mnt/home/
+mount /dev/new/tmp /mnt/tmp/
+
+## copy existing data to new points
+cp -a /home/. /mnt/home/
+cp -a /tmp/. /mnt/tmp/
+
+## DOUBLE CHECK EVERYTHING HAS BEEN COPIED BEFORE PROCEEDING
+ls -A /mnt/home
+ls -A /mnt/tmp
+
+## free space of old tmp and home
+rm -rf /home/*
+rm -rf /tmp/*
+
+## unmount from temporary points (and remove directories)
+umount /mnt/home
+umount /mnt/tmp
+rmdir /mnt/home
+rmdir /mnt/tmp
+
+## mount to original points
+mount /dev/new/home /home/
+mount /dev/new/tmp /tmp/
+
+## add mount points to fstab to persist through reboots
+vim etc/fstab
+
+Add the following lines:
+
+/dev/new/home    /home    xfs	nodev    	0 0
+/dev/new/tmp     /tmp     xfs	nodev,nosuid,noexec	0 0
+
+
+reboot
+
+## double check once rebooted that everything is still there
+lsblk
+ls -A /home/
+ls -A /tmp/

@@ -1,0 +1,23 @@
+Ryan Taylor
+CSCI 4113 - Linux SysAdmin
+Spring 2021
+
+To apply:
+
+To machine A:
+ssh 100.64.0.##
+mkdir /etc/puppet/manifests
+logout
+
+scp users.pp root@100.64.0.##:/etc/puppet/manifests
+puppet apply users.pp
+
+For each subsequent machine:
+ssh root@100.64.##.#
+mkdir /etc/puppet/manifests
+logout
+scp users.pp root@100.64.##.#:/etc/puppet/manifests
+ssh root@100.64.##.#
+cd /etc/puppet/manifests
+puppet apply users.pp
+logout
